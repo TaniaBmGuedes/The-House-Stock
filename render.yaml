@@ -17,3 +17,16 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Avisos de validade por email (opcional)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: CRON_SECRET
+        sync: false

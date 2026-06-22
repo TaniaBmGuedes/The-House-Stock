@@ -1,0 +1,17 @@
+name: Avisos de validade
+
+# Corre todos os dias às 08:00 UTC (~8/9h em Portugal). Também pode ser
+# disparado à mão no separador "Actions".
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar o endpoint de avisos
+        run: |
+          curl -fsS -X POST \
+            "${{ secrets.APP_URL }}/api/cron/notify-expiring?token=${{ secrets.CRON_SECRET }}"

@@ -68,3 +68,21 @@ site (build do Vite) **e** a API no mesmo processo.
 
 > Testar o build de produção localmente: `npm run build && npm start`
 > (abre http://localhost:3001).
+
+## 4. Avisos de validade por email (opcional)
+
+Quando falta **uma semana (≤7 dias)** para um item expirar, é enviado um email
+aos endereços da Casa (campo recolhido no registo).
+
+- **Como funciona:** um agendador diário (GitHub Actions) chama o endpoint
+  protegido `POST /api/cron/notify-expiring?token=CRON_SECRET`. Esse endpoint
+  procura os itens a expirar, envia o email (SMTP) e marca-os como avisados
+  (não repete). Se editares a validade, volta a poder avisar.
+- **Configurar o envio (Render → Environment):** `SMTP_HOST`, `SMTP_PORT`,
+  `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `CRON_SECRET`. Com Gmail, usa uma
+  [App Password](https://myaccount.google.com/apppasswords) em `SMTP_PASS`.
+- **Configurar o agendador (GitHub → repo → Settings → Secrets and variables →
+  Actions):** cria os *secrets* `APP_URL` (ex.: `https://...onrender.com`) e
+  `CRON_SECRET` (o mesmo valor do Render). O workflow está em
+  `.github/workflows/notify-expiry.yml` (corre às 08:00 UTC; podes dispará-lo à
+  mão em **Actions**).

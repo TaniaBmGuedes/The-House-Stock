@@ -33,6 +33,8 @@ const ItemSchema = new mongoose.Schema(
     price: { type: Number, default: null, min: 0 },
     // Guardada como texto no formato dd/mm/yyyy.
     expiryDate: { type: String, default: '', trim: true },
+    // Marca se já foi enviado o aviso de validade (para não repetir).
+    expiryNotified: { type: Boolean, default: false },
     note: { type: String, default: '', trim: true },
     // Código de barras (EAN/UPC) do produto.
     barcode: { type: String, default: '', trim: true },

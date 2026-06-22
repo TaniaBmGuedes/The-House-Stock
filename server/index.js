@@ -11,6 +11,7 @@ import * as itemController from './controllers/itemController.js';
 import * as localController from './controllers/localController.js';
 import * as authController from './controllers/authController.js';
 import * as recognizeController from './controllers/recognizeController.js';
+import * as cronController from './controllers/cronController.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(__dirname, '..', 'dist');
@@ -36,6 +37,8 @@ app.all('/api/locals/:id', (req, res) => {
   req.query = { ...req.query, id: req.params.id };
   return localController.resource(req, res);
 });
+
+app.all('/api/cron/notify-expiring', (req, res) => cronController.notify(req, res));
 
 // Qualquer /api desconhecido -> 404 JSON (não cai no fallback do site).
 app.all('/api/*', (req, res) => res.status(404).json({ error: 'Rota não encontrada.' }));

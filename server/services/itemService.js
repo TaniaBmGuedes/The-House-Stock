@@ -31,6 +31,8 @@ export async function updateItem(casa, id, body) {
   await connectDB();
   const data = pick(body, ALLOWED);
   if ('quantity' in data && data.quantity < 0) data.quantity = 0;
+  // Se a validade mudou, volta a permitir o aviso para a nova data.
+  if ('expiryDate' in data) data.expiryNotified = false;
   const item = await repo.updateInCasa(id, casa, data);
   if (!item) throw new ApiError(404, 'Item não encontrado.');
   return item;

@@ -9,6 +9,7 @@ import * as itemController from './controllers/itemController.js';
 import * as localController from './controllers/localController.js';
 import * as authController from './controllers/authController.js';
 import * as recognizeController from './controllers/recognizeController.js';
+import * as cronController from './controllers/cronController.js';
 
 const app = express();
 // Limite maior porque as fotos chegam em base64.
@@ -34,6 +35,9 @@ app.all('/api/locals/:id', (req, res) => {
   req.query = { ...req.query, id: req.params.id };
   return localController.resource(req, res);
 });
+
+// Cron: avisos de validade (chamado por agendador externo)
+app.all('/api/cron/notify-expiring', (req, res) => cronController.notify(req, res));
 
 const PORT = 3001;
 app.listen(PORT, () => {
