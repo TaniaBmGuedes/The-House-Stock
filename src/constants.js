@@ -22,4 +22,7 @@ export const EMPTY_FORM = {
   note: '',
   barcode: '',
   image: '',
+  localId: '',
+  cell: null,
+  volume: '',
 };

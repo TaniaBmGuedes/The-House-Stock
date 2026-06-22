@@ -9,14 +9,12 @@ import {
   Textarea,
   Select,
   SelectItem,
-  Autocomplete,
-  AutocompleteItem,
   DatePicker,
   Button,
 } from '@heroui/react';
 import { CalendarDate } from '@internationalized/date';
-import { Camera, X, Check, Sparkles, Image as ImageIcon, ScanBarcode } from 'lucide-react';
-import { CATEGORY_KEYS, CATEGORY_LABELS, LOCATION_SUGGESTIONS } from '../i18n';
+import { Camera, X, Check, Sparkles, Image as ImageIcon, ScanBarcode, Plus } from 'lucide-react';
+import { CATEGORY_KEYS, CATEGORY_LABELS } from '../i18n';
 import { EMPTY_FORM } from '../constants';
 import { fileToResizedBase64 } from '../lib/image';
 import { decodeBarcodeFromFile, lookupBarcode } from '../lib/barcode';
@@ -54,10 +52,26 @@ function itemToForm(item) {
     note: item.note || '',
     barcode: item.barcode || '',
     image: item.image || '',
+    localId: item.localId || '',
+    cell: item.cell ?? null,
+    volume: item.volume == null ? '' : String(item.volume),
   };
 }
 
-export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, item }) {
+export default function ItemForm({
+  isOpen,
+  onClose,
+  onSubmit,
+  saving,
+  tr,
+  lang,
+  item,
+  locals = [],
+  onAddLocal,
+  onQuickLocal,
+  selectLocalId,
+  onSelectConsumed,
+}) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [photoErr, setPhotoErr] = useState('');
   const [capture, setCapture] = useState(null); // { image, mediaType } para a IA
@@ -164,7 +178,19 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
     }
   }
 
-  const suggestions = LOCATION_SUGGESTIONS[lang][form.category] || [];
+  const selectedLocal = locals.find((l) => l._id === form.localId);
+  // Sugestões default que ainda não existem como Local.
+  const suggestions = (tr.defaultLocals || []).filter(
+    (n) => !locals.some((l) => l.name.toLowerCase() === n.toLowerCase())
+  );
+
+  // Quando um local acabado de criar deve ser selecionado neste item.
+  useEffect(() => {
+    if (selectLocalId) {
+      setField('localId', selectLocalId);
+      onSelectConsumed?.();
+    }
+  }, [selectLocalId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function submit(e) {
     e.preventDefault();
@@ -183,6 +209,9 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
       note: form.note.trim(),
       barcode: form.barcode.trim(),
       image: form.image,
+      localId: form.localId || null,
+      cell: form.cell,
+      volume: form.volume === '' ? null : Number(form.volume),
     });
   }
 
@@ -317,17 +346,75 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
                 ))}
               </Select>
 
-              <Autocomplete
+              <Select
                 variant="bordered"
-                label={tr.location}
-                placeholder={tr.locationPlaceholder}
-                allowsCustomValue
-                inputValue={form.location}
-                onInputChange={(v) => setField('location', v)}
-                items={suggestions.map((s) => ({ key: s, label: s }))}
+                label={tr.localField}
+                selectedKeys={[form.localId || '__none']}
+                onSelectionChange={(keys) => {
+                  const v = Array.from(keys)[0];
+                  if (v === '__add') {
+                    onAddLocal?.();
+                    return;
+                  }
+                  if (typeof v === 'string' && v.startsWith('__suggest:')) {
+                    onQuickLocal?.(v.slice('__suggest:'.length));
+                    return;
+                  }
+                  setForm((f) => ({ ...f, localId: v === '__none' ? '' : v, cell: null }));
+                }}
               >
-                {(s) => <AutocompleteItem key={s.key}>{s.label}</AutocompleteItem>}
-              </Autocomplete>
+                <SelectItem key="__none">{tr.noLocal}</SelectItem>
+                {locals.map((l) => (
+                  <SelectItem key={l._id}>{l.name}</SelectItem>
+                ))}
+                {suggestions.map((name) => (
+                  <SelectItem key={`__suggest:${name}`} className="text-stone-500">
+                    {name}
+                  </SelectItem>
+                ))}
+                <SelectItem key="__add" startContent={<Plus size={16} />} className="text-primary">
+                  {tr.newLocal}
+                </SelectItem>
+              </Select>
+
+              {selectedLocal && (
+                <>
+                  <Input
+                    variant="bordered"
+                    label={tr.volumePerUnit}
+                    inputMode="decimal"
+                    placeholder="0"
+                    value={form.volume}
+                    onValueChange={(v) =>
+                      setField('volume', v.replace(/[^\d.,]/g, '').replace(',', '.'))
+                    }
+                  />
+                  <div>
+                    <p className="mb-1 text-sm text-stone-600">{tr.position}</p>
+                    <div
+                      className="grid gap-1.5"
+                      style={{
+                        gridTemplateColumns: `repeat(${selectedLocal.cols}, minmax(0, 1fr))`,
+                      }}
+                    >
+                      {Array.from({ length: selectedLocal.cols * selectedLocal.rows }, (_, i) => (
+                        <button
+                          type="button"
+                          key={i}
+                          onClick={() => setField('cell', form.cell === i ? null : i)}
+                          className={`h-10 rounded-md border text-xs font-medium transition-colors ${
+                            form.cell === i
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-stone-200 bg-stone-50 text-stone-500 hover:bg-stone-100'
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="flex gap-3">
                 <Input

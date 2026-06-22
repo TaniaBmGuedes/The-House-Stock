@@ -6,6 +6,7 @@ dotenv.config({ path: '.env.local' });
 
 import express from 'express';
 import * as itemController from './controllers/itemController.js';
+import * as localController from './controllers/localController.js';
 import * as authController from './controllers/authController.js';
 import * as recognizeController from './controllers/recognizeController.js';
 
@@ -25,6 +26,13 @@ app.all('/api/items', (req, res) => itemController.collection(req, res));
 app.all('/api/items/:id', (req, res) => {
   req.query = { ...req.query, id: req.params.id };
   return itemController.resource(req, res);
+});
+
+// Locais de arrumação
+app.all('/api/locals', (req, res) => localController.collection(req, res));
+app.all('/api/locals/:id', (req, res) => {
+  req.query = { ...req.query, id: req.params.id };
+  return localController.resource(req, res);
 });
 
 const PORT = 3001;

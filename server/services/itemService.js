@@ -5,6 +5,7 @@ import * as repo from '../repositories/itemRepository.js';
 const ALLOWED = [
   'name', 'category', 'location', 'quantity', 'unit', 'packSize', 'packUnit',
   'brand', 'price', 'expiryDate', 'note', 'barcode', 'image',
+  'localId', 'cell', 'volume',
 ];
 
 function pick(obj, keys) {

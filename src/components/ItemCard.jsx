@@ -3,8 +3,9 @@ import { Trash2, Plus, Minus, MapPin, Pencil } from 'lucide-react';
 import { CATEGORY_ICON } from '../constants';
 import { expiryStatus } from '../lib/date';
 
-export default function ItemCard({ item, tr, onInc, onDec, onDelete, onEdit }) {
+export default function ItemCard({ item, tr, locals = [], onInc, onDec, onDelete, onEdit }) {
   const Icon = CATEGORY_ICON[item.category];
+  const local = locals.find((l) => l._id === item.localId);
   const ex = expiryStatus(item.expiryDate, tr);
   const out = item.quantity === 0;
   const hasPack = item.packSize != null && item.packSize !== '';
@@ -32,33 +33,49 @@ export default function ItemCard({ item, tr, onInc, onDec, onDelete, onEdit }) {
               )}
             </div>
           </div>
-          <div className="flex shrink-0 items-center">
+          <div className="flex shrink-0 items-center gap-1">
             <Button
-              isIconOnly
               size="sm"
               variant="light"
-              aria-label={tr.edit}
+              startContent={<Pencil size={15} />}
               onPress={() => onEdit(item)}
             >
-              <Pencil size={17} />
+              {tr.edit}
             </Button>
             <Button
-              isIconOnly
               size="sm"
               variant="light"
               color="danger"
-              aria-label={tr.confirmDelete}
+              startContent={<Trash2 size={15} />}
               onPress={() => onDelete(item)}
             >
-              <Trash2 size={18} />
+              {tr.deleteBtn}
             </Button>
           </div>
         </div>
 
-        {item.location && (
-          <p className="flex items-center gap-1 text-xs text-stone-500">
-            <MapPin size={13} /> {item.location}
-          </p>
+        {(local || item.location) && (
+          <div className="flex items-center gap-2">
+            <p className="flex items-center gap-1 text-xs text-stone-500">
+              <MapPin size={13} /> {local ? local.name : item.location}
+            </p>
+            {local && item.cell != null && (
+              <div
+                className="grid gap-0.5"
+                style={{ gridTemplateColumns: `repeat(${local.cols}, minmax(0, 0.55rem))` }}
+                aria-label={tr.position}
+              >
+                {Array.from({ length: local.cols * local.rows }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`h-2 w-2 rounded-md ${
+                      i === item.cell ? 'bg-primary' : 'bg-stone-200'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {item.note && <p className="truncate text-xs text-stone-500">{item.note}</p>}

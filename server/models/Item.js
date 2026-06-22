@@ -18,6 +18,12 @@ const ItemSchema = new mongoose.Schema(
     },
     // Compartimento dentro da categoria (ex: Frigorífico, Arca, Armário).
     location: { type: String, default: '', trim: true },
+    // Local de arrumação (entidade Local) e posição na grelha desse local.
+    localId: { type: mongoose.Schema.Types.ObjectId, ref: 'Local', default: null },
+    // Célula da grelha do Local (índice 0..cols*rows-1), null = sem posição.
+    cell: { type: Number, default: null, min: 0 },
+    // Volume ocupado por cada unidade, em litros (para a ocupação do Local).
+    volume: { type: Number, default: null, min: 0 },
     quantity: { type: Number, default: 1, min: 0 },
     unit: { type: String, default: 'un', trim: true },
     // Conteúdo de cada unidade (ex.: 50 g por saco). Total = quantity * packSize.

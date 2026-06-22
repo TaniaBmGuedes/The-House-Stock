@@ -1,5 +1,5 @@
-import { Input, Tabs, Tab, Chip } from '@heroui/react';
-import { Search, Grid2x2 } from 'lucide-react';
+import { Input, Tabs, Tab, Chip, Button } from '@heroui/react';
+import { Search, Grid2x2, Boxes } from 'lucide-react';
 import { CATEGORY_KEYS, CATEGORY_LABELS } from '../i18n';
 import { CATEGORY_ICON } from '../constants';
 
@@ -14,6 +14,7 @@ export default function Header({
   locations = [],
   locationFilter,
   onLocationFilter,
+  onOpenLocals,
   rightSlot,
 }) {
   return (
@@ -38,19 +39,31 @@ export default function Header({
 
       {/* Pesquisa + filtros */}
       <div className="flex min-w-0 flex-col gap-2 border-b border-stone-200 bg-white px-4 py-2.5">
-        <Input
-          aria-label={tr.searchPlaceholder}
-          placeholder={tr.searchPlaceholder}
-          value={search}
-          onValueChange={onSearch}
-          isClearable
-          onClear={() => onSearch('')}
-          startContent={<Search size={18} className="text-stone-400" />}
-          variant="bordered"
-          radius="md"
-          fullWidth
-          className="w-full"
-        />
+        <div className="flex items-stretch gap-2">
+          <Input
+            aria-label={tr.searchPlaceholder}
+            placeholder={tr.searchPlaceholder}
+            value={search}
+            onValueChange={onSearch}
+            isClearable
+            onClear={() => onSearch('')}
+            startContent={<Search size={18} className="text-stone-400" />}
+            variant="bordered"
+            radius="md"
+            fullWidth
+            className="w-full"
+          />
+          <Button
+            isIconOnly
+            variant="bordered"
+            radius="md"
+            className="h-auto shrink-0"
+            aria-label={tr.manageLocals}
+            onPress={onOpenLocals}
+          >
+            <Boxes size={20} />
+          </Button>
+        </div>
 
         <Tabs
           aria-label="Categorias"
@@ -98,13 +111,13 @@ export default function Header({
             </Chip>
             {locations.map((loc) => (
               <Chip
-                key={loc}
-                variant={locationFilter === loc ? 'solid' : 'bordered'}
-                color={locationFilter === loc ? 'primary' : 'default'}
+                key={loc.id}
+                variant={locationFilter === loc.id ? 'solid' : 'bordered'}
+                color={locationFilter === loc.id ? 'primary' : 'default'}
                 className="shrink-0 cursor-pointer"
-                onClick={() => onLocationFilter(loc)}
+                onClick={() => onLocationFilter(loc.id)}
               >
-                {loc}
+                {loc.name}
               </Chip>
             ))}
           </div>
