@@ -1,0 +1,19 @@
+# Deploy no Render (https://render.com). Cria um "Blueprint" a partir do repo
+# e o Render lê este ficheiro. As 3 env vars (sync:false) são preenchidas por ti
+# no painel — não ficam no GitHub.
+services:
+  - type: web
+    name: the-house-stock
+    runtime: node
+    plan: free
+    # --include=dev força a instalação do Vite (devDependency) para o build.
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
