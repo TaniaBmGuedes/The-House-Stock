@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/* Impede overflow horizontal (e a expansão do viewport no telemóvel, que
+   desalinhava os modais). `clip` não cria scroll-container, por isso o
+   header sticky continua a funcionar. */
+html,
+body,
+#root {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+/* Remove o halo/contorno claro (shadow) à volta dos campos HeroUI (input,
+   select, textarea), para um aspeto liso e sem contornos brancos. */
+[data-slot='input-wrapper'],
+[data-slot='trigger'] {
+  box-shadow: none !important;
+}

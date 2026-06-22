@@ -1,0 +1,19 @@
+# MongoDB dedicado ao casa-stock (independente de outros projetos).
+# Arranca com:  docker compose up -d
+services:
+  mongo:
+    image: mongo:7
+    container_name: casa-stock-mongo
+    restart: unless-stopped
+    ports:
+      # Mapeado para 27018 no host porque a 27017 pode já estar ocupada.
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: casastock
+      MONGO_INITDB_ROOT_PASSWORD: casastock
+      MONGO_INITDB_DATABASE: casa-stock
+    volumes:
+      - casa-stock-mongo-data:/data/db
+
+volumes:
+  casa-stock-mongo-data:
