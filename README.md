@@ -50,17 +50,3 @@ Isto arranca **ao mesmo tempo** o frontend (Vite, http://localhost:5173) e um
 servidor de API local (http://localhost:3001) que reutiliza os mesmos handlers
 da pasta `/api`. Abre http://localhost:5173 — os pedidos `/api/...` são
 encaminhados automaticamente para a API. Não é preciso a CLI da Vercel.
-
-## 3. Deploy na Vercel
-
-1. Põe o projeto no GitHub.
-2. Em https://vercel.com → **New Project** → importa o repositório.
-3. Em **Settings → Environment Variables**, adiciona:
-   - `MONGODB_URI` = a tua connection string do Atlas
-4. **Deploy**. Ficas com um link tipo `casa-stock.vercel.app` que abrem os dois
-   no telemóvel. 💚
-
-### Dica: adicionar ao ecrã inicial do telemóvel
-
-No telemóvel, abre o link → menu do browser → **"Adicionar ao ecrã principal"**.
-Fica com um ícone como se fosse uma app.

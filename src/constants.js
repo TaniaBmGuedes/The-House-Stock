@@ -14,9 +14,12 @@ export const EMPTY_FORM = {
   location: '',
   quantity: '1',
   unit: 'un',
+  packSize: '',
+  packUnit: '',
   brand: '',
   price: '',
   expiryDate: '',
   note: '',
+  barcode: '',
   image: '',
 };

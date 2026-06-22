@@ -46,10 +46,13 @@ function itemToForm(item) {
     location: item.location || '',
     quantity: String(item.quantity ?? '1'),
     unit: item.unit || 'un',
+    packSize: item.packSize == null ? '' : String(item.packSize),
+    packUnit: item.packUnit || '',
     brand: item.brand || '',
     price: item.price == null ? '' : String(item.price),
     expiryDate: item.expiryDate || '',
     note: item.note || '',
+    barcode: item.barcode || '',
     image: item.image || '',
   };
 }
@@ -138,6 +141,8 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
     setScanning(true);
     try {
       const code = await decodeBarcodeFromFile(file);
+      // Guarda já o código no item, mesmo que o produto não exista na base.
+      setField('barcode', code);
       const p = await lookupBarcode(code);
       if (!p || !p.name) {
         setBarcodeErr(tr.barcodeNotFound);
@@ -170,10 +175,13 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
       location: form.location.trim(),
       quantity: form.quantity === '' ? 0 : Number(form.quantity),
       unit: form.unit.trim() || 'un',
+      packSize: form.packSize === '' ? null : Number(form.packSize),
+      packUnit: form.packUnit.trim(),
       brand: form.brand.trim(),
       price: form.price === '' ? null : Number(form.price),
       expiryDate: form.expiryDate,
       note: form.note.trim(),
+      barcode: form.barcode.trim(),
       image: form.image,
     });
   }
@@ -342,6 +350,26 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
               <div className="flex gap-3">
                 <Input
                   variant="bordered"
+                  label={tr.packSize}
+                  inputMode="decimal"
+                  placeholder="0"
+                  value={form.packSize}
+                  onValueChange={(v) =>
+                    setField('packSize', v.replace(/[^\d.,]/g, '').replace(',', '.'))
+                  }
+                />
+                <Input
+                  variant="bordered"
+                  label={tr.unit}
+                  placeholder={tr.packUnitPlaceholder}
+                  value={form.packUnit}
+                  onValueChange={(v) => setField('packUnit', v)}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Input
+                  variant="bordered"
                   label={tr.brand}
                   placeholder={tr.brandPlaceholder}
                   value={form.brand}
@@ -373,6 +401,16 @@ export default function ItemForm({ isOpen, onClose, onSubmit, saving, tr, lang, 
                 minRows={2}
                 value={form.note}
                 onValueChange={(v) => setField('note', v)}
+              />
+
+              <Input
+                variant="bordered"
+                label={tr.barcodeField}
+                inputMode="numeric"
+                placeholder="—"
+                value={form.barcode}
+                onValueChange={(v) => setField('barcode', v.replace(/[^\dXx]/g, ''))}
+                startContent={<ScanBarcode size={16} className="shrink-0 text-stone-400" />}
               />
             </ModalBody>
             <ModalFooter>

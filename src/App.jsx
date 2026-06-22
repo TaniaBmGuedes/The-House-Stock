@@ -16,6 +16,7 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'pt');
   const tr = T[lang];
   const [filter, setFilter] = useState('Todos');
+  const [locationFilter, setLocationFilter] = useState('Todos');
   const [search, setSearch] = useState('');
   const form = useDisclosure();
   const [editing, setEditing] = useState(null); // item a editar (ou null = novo)
@@ -31,15 +32,33 @@ export default function App() {
   const updateItem = useUpdateItem();
   const deleteItem = useDeleteItem();
 
+  // Compartimentos (location) distintos dentro da categoria selecionada.
+  const locations = useMemo(() => {
+    const set = new Set();
+    items.forEach((it) => {
+      if ((filter === 'Todos' || it.category === filter) && it.location?.trim()) {
+        set.add(it.location.trim());
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [items, filter]);
+
   const visible = useMemo(
     () =>
       items.filter((it) => {
         const okCat = filter === 'Todos' || it.category === filter;
+        const okLoc = locationFilter === 'Todos' || it.location === locationFilter;
         const okSearch = it.name.toLowerCase().includes(search.toLowerCase());
-        return okCat && okSearch;
+        return okCat && okLoc && okSearch;
       }),
-    [items, filter, search]
+    [items, filter, locationFilter, search]
   );
+
+  // Ao mudar de categoria, repõe o filtro de compartimento.
+  function changeFilter(f) {
+    setFilter(f);
+    setLocationFilter('Todos');
+  }
 
   const attention = useMemo(
     () =>
@@ -87,7 +106,10 @@ export default function App() {
         search={search}
         onSearch={setSearch}
         filter={filter}
-        onFilter={setFilter}
+        onFilter={changeFilter}
+        locations={locations}
+        locationFilter={locationFilter}
+        onLocationFilter={setLocationFilter}
         rightSlot={
           <div className="flex items-center gap-2">
             <CasaSwitcher tr={tr} />

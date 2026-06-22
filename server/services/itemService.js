@@ -3,8 +3,8 @@ import { ApiError } from '../lib/ApiError.js';
 import * as repo from '../repositories/itemRepository.js';
 
 const ALLOWED = [
-  'name', 'category', 'location', 'quantity', 'unit',
-  'brand', 'price', 'expiryDate', 'note', 'image',
+  'name', 'category', 'location', 'quantity', 'unit', 'packSize', 'packUnit',
+  'brand', 'price', 'expiryDate', 'note', 'barcode', 'image',
 ];
 
 function pick(obj, keys) {

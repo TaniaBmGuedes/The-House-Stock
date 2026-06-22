@@ -11,6 +11,9 @@ export default function Header({
   onSearch,
   filter,
   onFilter,
+  locations = [],
+  locationFilter,
+  onLocationFilter,
   rightSlot,
 }) {
   return (
@@ -82,6 +85,30 @@ export default function Header({
             );
           })}
         </Tabs>
+
+        {locations.length > 0 && (
+          <div className="-mb-0.5 flex gap-1.5 overflow-x-auto pb-0.5">
+            <Chip
+              variant={locationFilter === 'Todos' ? 'solid' : 'bordered'}
+              color={locationFilter === 'Todos' ? 'primary' : 'default'}
+              className="shrink-0 cursor-pointer"
+              onClick={() => onLocationFilter('Todos')}
+            >
+              {tr.all}
+            </Chip>
+            {locations.map((loc) => (
+              <Chip
+                key={loc}
+                variant={locationFilter === loc ? 'solid' : 'bordered'}
+                color={locationFilter === loc ? 'primary' : 'default'}
+                className="shrink-0 cursor-pointer"
+                onClick={() => onLocationFilter(loc)}
+              >
+                {loc}
+              </Chip>
+            ))}
+          </div>
+        )}
       </div>
     </header>
   );

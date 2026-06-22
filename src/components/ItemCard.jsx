@@ -7,6 +7,10 @@ export default function ItemCard({ item, tr, onInc, onDec, onDelete, onEdit }) {
   const Icon = CATEGORY_ICON[item.category];
   const ex = expiryStatus(item.expiryDate, tr);
   const out = item.quantity === 0;
+  const hasPack = item.packSize != null && item.packSize !== '';
+  const fmt = (n) => Number(n).toLocaleString('pt-PT', { maximumFractionDigits: 2 });
+  const total = hasPack ? `${fmt(item.quantity * item.packSize)} ${item.packUnit}`.trim() : '';
+  const perUnit = hasPack ? `${fmt(item.packSize)} ${item.packUnit}`.trim() : '';
 
   return (
     <Card shadow="sm" className={out ? 'border-2 border-danger-200 bg-danger-50' : ''}>
@@ -64,6 +68,11 @@ export default function ItemCard({ item, tr, onInc, onDec, onDelete, onEdit }) {
             {item.price != null && (
               <Chip size="sm" variant="flat" color="primary">
                 {Number(item.price).toFixed(2)} €
+              </Chip>
+            )}
+            {hasPack && (
+              <Chip size="sm" variant="flat" color="secondary">
+                {item.quantity} × {perUnit} = {total}
               </Chip>
             )}
             {ex && (

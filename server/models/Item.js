@@ -20,11 +20,16 @@ const ItemSchema = new mongoose.Schema(
     location: { type: String, default: '', trim: true },
     quantity: { type: Number, default: 1, min: 0 },
     unit: { type: String, default: 'un', trim: true },
+    // Conteúdo de cada unidade (ex.: 50 g por saco). Total = quantity * packSize.
+    packSize: { type: Number, default: null, min: 0 },
+    packUnit: { type: String, default: '', trim: true },
     brand: { type: String, default: '', trim: true },
     price: { type: Number, default: null, min: 0 },
     // Guardada como texto no formato dd/mm/yyyy.
     expiryDate: { type: String, default: '', trim: true },
     note: { type: String, default: '', trim: true },
+    // Código de barras (EAN/UPC) do produto.
+    barcode: { type: String, default: '', trim: true },
     // Foto do produto, guardada como data URL base64 (data:image/jpeg;base64,...).
     image: { type: String, default: '' },
   },
